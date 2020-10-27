@@ -25,7 +25,7 @@ Hypothesis:
 We believe that sun block products will contain more toxic chemical reports while baby products will have less toxic chemical reports due to its publicly known stereotype of each kind of cosmetics. 
 
 Data Sources:
-1.	Chemicals in Cosmetics (CSV) - Main Data
+1.	Chemicals in Cosmetics (CSV) - Main Dataset
 https://data.chhs.ca.gov/dataset/chemicals-in-cosmetics/resource/57da6c9a-41a7-44b0-ab8d-815ff2cd5913
 
 2.	Reportable ingredient list (PDF) - Will be used to refer to toxicity of chemicals
