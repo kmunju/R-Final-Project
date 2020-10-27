@@ -36,5 +36,3 @@ MostRecentDateReported<-as.Date(df$MostRecentDateReported,format= "%m/%d/%y")
 DiscontinuedDate<-as.Date(df$DiscontinuedDate,format= "%m/%d/%y")
 ChemicalDateRemoved<-as.Date(df$ChemicalDateRemoved,format= "%m/%d/%y")
 
-top10chemical<- ungroup(df) %>%
-  top_n(10, ChmemicalName) 
