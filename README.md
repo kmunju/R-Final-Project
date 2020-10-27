@@ -26,9 +26,11 @@ We believe that sun block products will contain more toxic chemical reports whil
 
 Data Sources:
 1.	Chemicals in Cosmetics (CSV) - Main Dataset
+
 https://data.chhs.ca.gov/dataset/chemicals-in-cosmetics/resource/57da6c9a-41a7-44b0-ab8d-815ff2cd5913
 
 2.	Reportable ingredient list (PDF) - Will be used to refer to toxicity of chemicals
+
 https://www.cdph.ca.gov/Programs/CCDPHP/DEODC/OHB/CSCP/CDPH%20Document%20Library/chemlist.pdf
 
 
