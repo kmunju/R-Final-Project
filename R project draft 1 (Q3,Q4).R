@@ -34,6 +34,8 @@ DiscontinuedDate<-as.Date(df$DiscontinuedDate,format= "%m/%d/%y")
 ChemicalDateRemoved<-as.Date(df$ChemicalDateRemoved,format= "%m/%d/%y")
 ChemicalCreatedAt<-as.Date(df$ChemicalDateRemoved,format= "%m/%d/%y")
 ChemicalUpdatedAt<-as.Date(df$ChemicalDateRemoved,format= "%m/%d/%y")
+
+##########################################################################################################################################################################
 #Which primary category of cosmetics contain most chemical content reports?
 library(dplyr)
 library(reshape2)
