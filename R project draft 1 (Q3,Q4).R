@@ -36,7 +36,7 @@ ChemicalCreatedAt<-as.Date(df$ChemicalDateRemoved,format= "%m/%d/%y")
 ChemicalUpdatedAt<-as.Date(df$ChemicalDateRemoved,format= "%m/%d/%y")
 
 ##########################################################################################################################################################################
-#Which primary category of cosmetics contain most chemical content reports?
+#Q3.Which primary category of cosmetics contain most chemical content reports?
 library(dplyr)
 library(reshape2)
 
@@ -47,25 +47,17 @@ Primary <- df %>%
   summarise(Avgchemcnt=mean(ChemicalCount))%>%
   arrange(desc(Avgchemcnt))
 
-primary <- ungroup(primary)
-
 #Summary result for chem count(subcategory)
 Sub <- df %>% 
   select(SubCategory, ChemicalCount) %>% 
   group_by(SubCategory) %>% 
   summarise(Avgchemcnt=mean(ChemicalCount))%>%
   arrange(desc(Avgchemcnt))
+
 #top_n(10, Avgchemcntt) 
 
-#library(ggplot2)
-#Create visualization
-#qplot(mean(ChemicalCount), data = df, geom = "histogram", binwidth = 0.1,
-#fill = PrimaryCategory)
 
-sub <- ungroup(sub)
-
-
-#Which companies' cosmetics contain most chemical reports and have not yet fixed, removed, or discontinued the product? Which companies are responsive to public health concern?
+#Q4.Which companies' cosmetics contain most chemical reports and have not yet fixed, removed, or discontinued the product? Which companies are responsive to public health concern?
 
 #Company responsive to health concern
 ethics <- df %>% 
@@ -75,4 +67,3 @@ ethics <- df %>%
   filter(ChemicalCreatedAt!=ChemicalUpdatedAt) %>% 
   arrange(desc(chemcnt))
 ethics <- ethics[complete.cases(ethics), ]
-
