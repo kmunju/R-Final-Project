@@ -35,12 +35,9 @@ InitialDateReported<-as.Date(df$InitialDateReported,format= "%m/%d/%y")
 MostRecentDateReported<-as.Date(df$MostRecentDateReported,format= "%m/%d/%y")
 DiscontinuedDate<-as.Date(df$DiscontinuedDate,format= "%m/%d/%y")
 ChemicalDateRemoved<-as.Date(df$ChemicalDateRemoved,format= "%m/%d/%y")
-
+ChemicalName<-as.factor(df$ChemicalName)
 # what are top 10 most reported type of chemical in cosmetic?
-top10chemical<- ungroup(df) %>%
-  group_by(df,ChemicalName) %>%
-  top_n(10, ChemicalName) %>%
-unique(df$ChemicalName)
+library(reshape2)
 
 top10chemical<- df %>% 
   select(ChemicalName, ChemicalCount) %>% 
@@ -51,4 +48,8 @@ top10chemical<- df %>%
 
 df <- group_by(df, ChemicalName)
 summ <- summarize(df, num_types = n())
-pivot <- dcast(summ, sale_price_binned ~ city, value.var = "num_types")
+pivot <- dcast(summ, ChemicalName~ ., value.var = "num_types")
+pivot<- arrange(pivot, desc(.))
+top10chemical<-head(pivot, n = 10) 
+# What is the toxicity of commonly reported chemicals?
+
