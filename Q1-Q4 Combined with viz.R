@@ -69,16 +69,24 @@ pdf <- pdf %>%
 names(pdf)[2]<-"CasNumber"
 
 ungroup(df)
-df <- group_by(df, ChemicalName, CasNumber)
+df<- group_by(df, ChemicalName, CasNumber)
 summ <- summarize(df, num_types = n())
 pivot<- arrange(summ, desc(num_types))
-top10chemical<-head(pivot, n = 5) 
-names(top10chemical)[3] <- "reportedtimes"
+top5chemical1<-head(pivot, n = 5) 
 
-top10chemical <- as.data.frame(top10chemical)
-top10toxic <- left_join(top10chemical, pdf, by = "CasNumber")
-top10toxic$Chemical <- NULL
-top10toxic <- top10toxic[c(-5),]    
+ungroup(df)
+df <- group_by(df, ChemicalName)
+summ <- summarize(df, num_types = n())
+pivot<- arrange(summ, desc(num_types))
+top5chemical<-head(pivot, n = 5) 
+names(top5chemical)[2] <- "reportedtimes"
+
+top5chemical$CasNumber <- top5chemical1$CasNumber
+
+top5chemical <- as.data.frame(top5chemical)
+top5toxic <- left_join(top5chemical, pdf, by = "CasNumber")
+top5toxic$Chemical <- NULL
+top5toxic <- top5toxic[c(-5),]    
 
 ##########################################################################################################################################################################
 
