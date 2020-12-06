@@ -7,6 +7,8 @@ library(dplyr)
 library(readxl)
 library(reshape2)
 library(ggplot2)
+library(xlsx)
+library(tidyverse)
 
 #Load column/Remove column
 my_col_types <- cols(
@@ -55,28 +57,28 @@ top5chemical <-head(top5chemical, n = 5)
 p<-barplot(top5chemical$ChemicalCount,names.arg=top5chemical$ChemicalName,xlab="ChemicalName",ylab="Reported times",col="gold",
            main="Top 5 common Chemicals in cosmetics",border="red")
 p
-
 ##########################################################################################################################################################################
 
 # Q2. What is the toxicity of commonly reported chemicals?
 
-pdf <- read_excel("pdf.xlsx")
-pdf[,c(1)]<-NULL
+pdf <- read_excel("pdf.xlsx", sheet = 1)
 pdf[,c(1)]<-NULL
 
 pdf <- pdf %>% 
-  select(Chemical, Cancer, Developmental, 'Female Reproductive', 'Male Reproductive')
+  select(Chemical, `CAS No.`, Cancer, Developmental, 'Female Reproductive', 'Male Reproductive')
+names(pdf)[2]<-"CasNumber"
 
-TiO2 <- pdf[grep("Titanium dioxide", x=pdf$Chemical),]
-ButylHy <- pdf[grep('Butylated hydroxyanisole', x=pdf$Chemical),]
-CarbonB <- pdf[grep('Carbon black', x=pdf$Chemical),]
-Talc <- pdf[grep('Talc', x=pdf$Chemical),]
-Retinol <- pdf[grep('Retinol', x=pdf$Chemical),]
-Cocamide <- pdf[grep('cocamide', x=pdf$Chemical),]
-Silica <- pdf[grep('Silica', x=pdf$Chemical),]
-Mica <- pdf[grep('mica', x=pdf$Chemical),]# lung scarring which leads to symptoms such as coughing, shortness of breath, weakness, and weight loss.
-Vitamin<- pdf[grep('vitamin', x=pdf$Chemical),]#Too much intake-altered bone metabolism and altered metabolism of other fat-soluble vitamins
-Retinylpalmitate<- pdf[grep('palmitate', x=pdf$Chemical),]#(Combination of pure vitamin A and fatty acid palmitic acid)-Generally safe
+ungroup(df)
+df <- group_by(df, ChemicalName, CasNumber)
+summ <- summarize(df, num_types = n())
+pivot<- arrange(summ, desc(num_types))
+top10chemical<-head(pivot, n = 10) 
+names(top10chemical)[3] <- "ChemicalCount"
+
+top10chemical <- as.data.frame(top10chemical)
+top10toxic <- left_join(top10chemical, pdf, by = "CasNumber")
+top10toxic$Chemical <- NULL
+top10toxic <- top10toxic[c(-5,-9,-11),]    
 
 ##########################################################################################################################################################################
 
