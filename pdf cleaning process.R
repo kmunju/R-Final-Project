@@ -6,47 +6,25 @@ library(dplyr)
 library(janitor)
 library(xlsx)
 
+options(warn=-1) # suppress warning
+
 # setting url of the pdf and extracting tables
 pdfurl <- 'https://www.cdph.ca.gov/Programs/CCDPHP/DEODC/OHB/CSCP/CDPH%20Document%20Library/chemlist.pdf'
 pdf <- extract_tables(pdfurl)
 
 # process of cleaning begins here:
+
 # removing the first row for first list, and first two rows for rest of the lists
 # containing column titles of tables in rows
-pdf[[1]]<-pdf[[1]][-c(1),]
-pdf[[2]]<-pdf[[2]][-c(1,2),]
-pdf[[3]]<-pdf[[3]][-c(1,2),]
-pdf[[4]]<-pdf[[4]][-c(1,2),]
-pdf[[5]]<-pdf[[5]][-c(1,2),]
-pdf[[6]]<-pdf[[6]][-c(1,2),]
-pdf[[7]]<-pdf[[7]][-c(1,2),]
-pdf[[8]]<-pdf[[8]][-c(1,2),]
-pdf[[9]]<-pdf[[9]][-c(1,2),]
-pdf[[10]]<-pdf[[10]][-c(1,2),]
-pdf[[11]]<-pdf[[11]][-c(1,2),]
-pdf[[12]]<-pdf[[12]][-c(1,2),]
-pdf[[13]]<-pdf[[13]][-c(1,2),]
-pdf[[14]]<-pdf[[14]][-c(1,2),]
-pdf[[15]]<-pdf[[15]][-c(1,2),]
-pdf[[16]]<-pdf[[16]][-c(1,2),]
-pdf[[17]]<-pdf[[17]][-c(1,2),]
-pdf[[18]]<-pdf[[18]][-c(1,2),]
-pdf[[19]]<-pdf[[19]][-c(1,2),]
-pdf[[20]]<-pdf[[20]][-c(1,2),]
-pdf[[21]]<-pdf[[21]][-c(1,2),]
-pdf[[22]]<-pdf[[22]][-c(1,2),]
-pdf[[23]]<-pdf[[23]][-c(1,2),]
-pdf[[24]]<-pdf[[24]][-c(1,2),]
-pdf[[25]]<-pdf[[25]][-c(1,2),]
-pdf[[26]]<-pdf[[26]][-c(1,2),]
-pdf[[27]]<-pdf[[27]][-c(1,2),]
-pdf[[28]]<-pdf[[28]][-c(1,2),]
-pdf[[29]]<-pdf[[29]][-c(1,2),]
-pdf[[30]]<-pdf[[30]][-c(1,2),]
-pdf[[31]]<-pdf[[31]][-c(1,2),]
-pdf[[32]]<-pdf[[32]][-c(1,2),]
-pdf[[33]]<-pdf[[33]][-c(1,2),]
-pdf[[34]]<-pdf[[34]][-c(1,2),]
+
+for(n in 1:34){
+  if(n==1){
+    pdf[[n]]<-pdf[[n]][-c(1),]
+  }
+  if(n>=2){
+    pdf[[n]]<-pdf[[n]][-c(1,2),]
+  }
+}
 
 # re-writing column titles as the original pdf file
 pdf[[1]][1,] <- c("_","Chemical","Synonyms","CAS No.","Cancer","Developmental",
@@ -58,6 +36,10 @@ pdf[[1]] <- pdf[[1]] %>%
   row_to_names(row_number = 1)
 
 # binding lists together
+for(n in 1:34){
+  pdfbind<-rbind(pdf[[n]])
+}
+
 pdfbind <- rbind(pdf[[1]],pdf[[2]],pdf[[3]],pdf[[4]],pdf[[5]],pdf[[6]],pdf[[7]],
                  pdf[[8]],pdf[[9]],pdf[[10]],pdf[[11]],pdf[[12]],pdf[[13]],pdf[[14]],
                  pdf[[15]],pdf[[16]],pdf[[17]],pdf[[18]],pdf[[19]],pdf[[20]],pdf[[21]],
