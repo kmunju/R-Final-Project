@@ -82,52 +82,38 @@ p
 
 ##########################################################################################################################################################################
 
-# Q2. What is the health effect of commonly reported chemicals?
 
+# Q2. What is the toxicity of commonly reported chemicals?
 
+#Read in reference pdf
+#Note: Refer to "pdf cleaning process.R" for extraction method of pdf to excel
 pdf <- read_excel("pdf.xlsx", sheet = 1)
-pdf[,c(1)]<-NULL
 
+#Select only needed columns
 pdf <- pdf %>% 
-  select(Chemical, `CAS No.`, Cancer, Developmental, 'Female Reproductive', 'Male Reproductive')
-names(pdf)[2]<-"CasNumber"
+  select(`CAS No.`, Cancer, Developmental, 'Female Reproductive', 'Male Reproductive')
 
-ungroup(df)
+names(pdf)[1]<-"CasNumber" #Change name of "CAS NO." column to "CasNumber" for later use
+
+ungroup(df) #Ungroup df from previous question
+
+#Making exact same copy of summary table in previous question, but adding
+#CasNumber column
 df<- group_by(df, ChemicalName, CasNumber)
-summ <- summarize(df, num_types = n())
-pivot<- arrange(summ, desc(num_types))
+summ <- summarize(df, num_types = n()) 
+pivot<- arrange(summ, desc(num_types)) 
 top5chemical1<-head(pivot, n = 5) 
 
-ungroup(df)
-df <- group_by(df, ChemicalName)
-summ <- summarize(df, num_types = n())
-pivot<- arrange(summ, desc(num_types))
-top5chemical<-head(pivot, n = 5) 
-names(top5chemical)[2] <- "reportedtimes"
+#Then add the CasNumber to top5chemical as its order
+top5chemical$CasNumber <- top5chemical1$CasNumber 
 
-top5chemical$CasNumber <- top5chemical1$CasNumber
+#Check whether two CasNumber columns are identical
+identical(top5chemical$CasNumber, top5chemical1$CasNumber) 
+top5chemical <- as.data.frame(top5chemical) #Coercing top5chemical as dataframe
+#Leftjoin top5chemical table and pdf by "CasNumber" to look into health effects
+top5toxic <- left_join(top5chemical, pdf, by = "CasNumber") 
+top5toxic<-top5toxic[c(-5),]
 
-top5chemical <- as.data.frame(top5chemical)
-top5toxic <- left_join(top5chemical, pdf, by = "CasNumber")
-top5toxic$Chemical <- NULL
-top5toxic <- top5toxic[c(-5),]   
-
-#Create visualization for health effect of commonly reported chemicals
-top5toxic$Cancer<-factor(top5toxic$Cancer)
-
-top5toxic$healtheffect<-levels(top5toxic$Cancer)[levels(top5toxic$Cancer) == "X"] <- "Cancer"
-top5toxic$healtheffect<-levels(top5toxic$Cancer)[levels(top5toxic$Cancer) == "NA"] <- "NOT PRESENT"
-top5toxic$healtheffect<-levels(top5toxic$Cancer)[levels(top5toxic$Cancer) == "NA"] <- "NOT PRESENT"
-levels(df$station)[levels(df$station) == "4"] <- "Northeast"
-
-
-
-
-top5toxic$Healtheffect <- NULL
-p<-barplot(top5toxic$reportedtimes,names.arg=top5toxic$ChemicalName,xlab="ChemicalName",ylab="Reported times",col="gold",
-           main="Top 5 common Chemicals in cosmetics",border="red")
-text(p,top5toxic$reportedtimes+ 2*sign(top5toxic$reportedtimes), top5toxic$healtheffect, xpd=TRUE)
-p
 
 
 ##########################################################################################################################################################################
