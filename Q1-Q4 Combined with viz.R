@@ -2,7 +2,7 @@
 #Final project by Munju Kam, Deanna Kwon, Ruiqi Xie
 
 
-#List of Questions to investigate:
+# List of Questions to investigate:
 ## Q1. what are top 5 most reported type of chemical in cosmetic?
 ## Q2. What is the health effect of commonly reported chemicals?
 ## Q3.Which primary/sub category of cosmetics contain most chemical content reports?
