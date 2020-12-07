@@ -16,6 +16,7 @@ library(dplyr)
 library(readxl)
 library(reshape2)
 library(ggplot2)
+library(tidyverse)
 
 #Load column/Remove column
 my_col_types <- cols(
