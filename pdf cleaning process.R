@@ -36,9 +36,6 @@ pdf[[1]] <- pdf[[1]] %>%
   row_to_names(row_number = 1)
 
 # binding lists together
-for(n in 1:34){
-  pdfbind<-rbind(pdf[[n]])
-}
 
 pdfbind <- rbind(pdf[[1]],pdf[[2]],pdf[[3]],pdf[[4]],pdf[[5]],pdf[[6]],pdf[[7]],
                  pdf[[8]],pdf[[9]],pdf[[10]],pdf[[11]],pdf[[12]],pdf[[13]],pdf[[14]],
