@@ -114,7 +114,7 @@ top5chemical <- as.data.frame(top5chemical) #Coercing top5chemical as dataframe
 top5toxic <- left_join(top5chemical, pdf, by = "CasNumber") 
 top5toxic<-top5toxic[c(-5),]
 
-
+#Please refer to ppt for visualization
 
 ##########################################################################################################################################################################
 
