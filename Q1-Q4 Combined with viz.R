@@ -1,4 +1,13 @@
-# install.packages("readxl")
+#TOXIC CHEMICALS IN COSMETICS
+#Final project by Munju Kam, Deanna Kwon, Ruiqi Xie
+
+
+#List of Questions to investigate:
+## Q1. what are top 5 most reported type of chemical in cosmetic?
+## Q2. What is the health effect of commonly reported chemicals?
+## Q3.Which primary/sub category of cosmetics contain most chemical content reports?
+## Q4.Which Company is responsive to health concern?
+
 
 #Load library
 
@@ -7,8 +16,6 @@ library(dplyr)
 library(readxl)
 library(reshape2)
 library(ggplot2)
-library(xlsx)
-library(tidyverse)
 
 #Load column/Remove column
 my_col_types <- cols(
@@ -31,9 +38,10 @@ my_col_types <- cols(
 )
 
 #Read the data as df
-df <- read_csv("cscpopendata.csv", col_type=my_col_types,na=c(""))
+df <- read_csv("cscpopendata.csv", col_type=my_col_types,na=c("", "NA"))
+
+
 df <- df%>%
-  
   #Filter case number with space
 filter(CasNumber != "" & BrandName !="")
 InitialDateReported<-as.Date(df$InitialDateReported,format= "%m/%d/%y")
@@ -50,46 +58,76 @@ ChemicalUpdatedAt<-as.Date(df$ChemicalDateRemoved,format= "%m/%d/%y")
 top5chemical <- group_by(df, ChemicalName)
 top5chemical <- summarize(top5chemical, ChemicalCount = n())
 top5chemical <- arrange(top5chemical, desc(ChemicalCount))
-top5chemical$Percentage <- round((top5chemical$ChemicalCount)/sum(top5chemical$ChemicalCount)*100,2)
-top5chemical <-head(top5chemical, n = 5) 
+top5chemical <-head(top5chemical, n = 5)
+#Test any percentage of appearance frequency for chemical name in the report
+chemicalsearch<- function(ChemlName = "") {
+  rows <- subset(df, ChemicalName == ChemlName)
+  Percentage <- round((nrow(rows)/nrow(df)*100),2)
+  Percentage <- paste(Percentage, "%", sep="")
+  return(Percentage)
+}
+
+#Create the percentage column with calculation using for loop
+top5chemical$Percentage<-0
+for(i in 1:5){
+  top5chemical$Percentage[i] <- chemicalsearch(top5chemical$ChemicalName[i])
+}
+ 
 
 #Create bar chart for Top 5 common Chemicals in cosmetics
 p<-barplot(top5chemical$ChemicalCount,names.arg=top5chemical$ChemicalName,xlab="ChemicalName",ylab="Reported times",col="gold",
            main="Top 5 common Chemicals in cosmetics",border="red")
 p
+
+
 ##########################################################################################################################################################################
 
-# Q2. What is the toxicity of commonly reported chemicals?
+# Q2. What is the health effect of commonly reported chemicals?
 
-# Q2. What is the toxicity of commonly reported chemicals?
 
-#Read in reference pdf
-#Note: Refer to "pdf cleaning process.R" for extraction method of pdf to excel
 pdf <- read_excel("pdf.xlsx", sheet = 1)
+pdf[,c(1)]<-NULL
 
-#Select only needed columns
 pdf <- pdf %>% 
-  select(`CAS No.`, Cancer, Developmental, 'Female Reproductive', 'Male Reproductive')
+  select(Chemical, `CAS No.`, Cancer, Developmental, 'Female Reproductive', 'Male Reproductive')
+names(pdf)[2]<-"CasNumber"
 
-names(pdf)[1]<-"CasNumber" #Change name of "CAS NO." column to "CasNumber" for later use
-
-ungroup(df) #Ungroup df from previous question
-
-#Making exact same copy of summary table in previous question, but adding
-#CasNumber column
+ungroup(df)
 df<- group_by(df, ChemicalName, CasNumber)
-summ <- summarize(df, num_types = n()) 
-pivot<- arrange(summ, desc(num_types)) 
+summ <- summarize(df, num_types = n())
+pivot<- arrange(summ, desc(num_types))
 top5chemical1<-head(pivot, n = 5) 
 
-#Then add the CasNumber to top5chemical as its order
-top5chemical$CasNumber <- top5chemical1$CasNumber 
+ungroup(df)
+df <- group_by(df, ChemicalName)
+summ <- summarize(df, num_types = n())
+pivot<- arrange(summ, desc(num_types))
+top5chemical<-head(pivot, n = 5) 
+names(top5chemical)[2] <- "reportedtimes"
 
-#Check whether two CasNumber columns are identical
-identical(top5chemical$CasNumber, top5chemical1$CasNumber) 
-top5chemical <- as.data.frame(top5chemical) #Coercing top5chemical as dataframe
-#Leftjoin top5chemical table and pdf by "CasNumber" to look into health effects
-top5toxic <- left_join(top5chemical, pdf, by = "CasNumber") 
+top5chemical$CasNumber <- top5chemical1$CasNumber
+
+top5chemical <- as.data.frame(top5chemical)
+top5toxic <- left_join(top5chemical, pdf, by = "CasNumber")
+top5toxic$Chemical <- NULL
+top5toxic <- top5toxic[c(-5),]   
+
+#Create visualization for health effect of commonly reported chemicals
+top5toxic$Cancer<-factor(top5toxic$Cancer)
+
+top5toxic$healtheffect<-levels(top5toxic$Cancer)[levels(top5toxic$Cancer) == "X"] <- "Cancer"
+top5toxic$healtheffect<-levels(top5toxic$Cancer)[levels(top5toxic$Cancer) == "NA"] <- "NOT PRESENT"
+top5toxic$healtheffect<-levels(top5toxic$Cancer)[levels(top5toxic$Cancer) == "NA"] <- "NOT PRESENT"
+levels(df$station)[levels(df$station) == "4"] <- "Northeast"
+
+
+
+
+top5toxic$Healtheffect <- NULL
+p<-barplot(top5toxic$reportedtimes,names.arg=top5toxic$ChemicalName,xlab="ChemicalName",ylab="Reported times",col="gold",
+           main="Top 5 common Chemicals in cosmetics",border="red")
+text(p,top5toxic$reportedtimes+ 2*sign(top5toxic$reportedtimes), top5toxic$healtheffect, xpd=TRUE)
+p
 
 
 ##########################################################################################################################################################################
@@ -137,4 +175,6 @@ p
 
  
 
+#Data referece: https://data.chhs.ca.gov/dataset/chemicals-in-cosmetics/resource/57da6c9a-41a7-44b0-ab8d-815ff2cd5913
+#https://www.cdph.ca.gov/Programs/CCDPHP/DEODC/OHB/CSCP/CDPH%20Document%20Library/chemlist.pdf
 
